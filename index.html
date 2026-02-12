@@ -286,14 +286,16 @@
     }
 
     .btn-no {
-      background: transparent;
-      color: rgba(253,246,240,.4);
-      border: 1px solid rgba(253,246,240,.15);
+      background: linear-gradient(135deg, #2a2a2a, #1a1a1a);
+      color: rgba(253,246,240,.85);
+      border: 1px solid rgba(253,246,240,.4);
       position: absolute;
       white-space: nowrap;
       transition: all .15s;
+      box-shadow: 0 4px 16px rgba(0,0,0,.4);
+      font-size: 1rem;
     }
-    .btn-no:hover { cursor: not-allowed; }
+    .btn-no:hover { cursor: not-allowed; box-shadow: 0 6px 20px rgba(0,0,0,.5); }
 
     /* ── SUCCESS STATE ── */
     #success {
@@ -422,7 +424,7 @@
     <div class="divider"><span class="divider-heart">♥</span></div>
 
     <div class="letter-closing">Forever yours,</div>
-    <div class="letter-sig">Charles Vincent</div>
+    <div class="letter-sig">miloyskiee 🌹</div>
   </div>
 </section>
 
@@ -433,7 +435,7 @@
     <p class="ask-sub" id="askSub">Because this heart only beats for you, Shaila 🌹</p>
     <span class="big-heart">❤️</span>
     <div class="btn-group" id="btnGroup">
-      <button class="btn btn-yes" onclick="sayYes()">Yes, of course! 💕</button>
+      <button class="btn btn-yes" id="yesBtn" onclick="sayYes()">Yes, of course! 💕</button>
       <button class="btn btn-no" id="noBtn" onmouseover="runAway(this)" ontouchstart="runAway(this)">No</button>
     </div>
   </div>
@@ -442,7 +444,7 @@
     <div class="success-hearts">💖 💕 💗</div>
     <div class="success-title">She said YES! 🎉</div>
     <p class="success-sub">You've made this the best Valentine's Day ever, Shaila.</p>
-    <p class="success-sub" style="margin-top:8px; font-size:1rem; opacity:.7;">— Charles Vincent loves you so much 🌹</p>
+    <p class="success-sub" style="margin-top:8px; font-size:1rem; opacity:.7;">— miloyskiee loves you so much 🌹</p>
   </div>
 </section>
 
@@ -505,26 +507,49 @@
      RUNAWAY NO BUTTON
   ════════════════════════ */
   let noClicks = 0;
+  const yesFunnyLabels = [
+    "Yes, of course! 💕",
+    "Okay fine… YES! 💕",
+    "Ugh, YES already! 😂💕",
+    "OBVIOUSLY YES!! 💖",
+    "YES YES YES!! 🌹💗",
+    "I SAID YES OKAY 😭💕",
+    "PLEASE JUST CLICK ME 💖🥺",
+  ];
+
   function runAway(btn) {
     const section = document.getElementById('ask');
-    const rect   = section.getBoundingClientRect();
+    const rect    = section.getBoundingClientRect();
     const bw = btn.offsetWidth;
     const bh = btn.offsetHeight;
 
     const maxX = rect.width  - bw  - 20;
     const maxY = rect.height - bh  - 20;
 
-    const newX = Math.random() * maxX;
-    const newY = Math.random() * maxY;
+    const newX = Math.floor(Math.random() * maxX);
+    const newY = Math.floor(Math.random() * maxY);
 
-    btn.style.position = 'absolute';
-    btn.style.left = newX + 'px';
-    btn.style.top  = newY + 'px';
-    btn.style.transition = 'left .2s, top .2s';
+    btn.style.position   = 'absolute';
+    btn.style.left       = newX + 'px';
+    btn.style.top        = newY + 'px';
+    btn.style.transition = 'left .18s cubic-bezier(.68,-0.55,.27,1.55), top .18s cubic-bezier(.68,-0.55,.27,1.55)';
 
     noClicks++;
-    if (noClicks >= 3) {
-      btn.style.opacity = String(Math.max(.05, .4 - noClicks * .08));
+
+    // Grow the YES button
+    const yesBtn = document.getElementById('yesBtn');
+    const newScale = 1 + noClicks * 0.15;
+    yesBtn.style.transform = `scale(${Math.min(newScale, 2.4)})`;
+    yesBtn.style.transition = 'transform .3s cubic-bezier(.68,-0.55,.27,1.55), box-shadow .3s';
+    yesBtn.style.boxShadow  = `0 ${8 + noClicks * 4}px ${32 + noClicks * 12}px rgba(192,57,75,${Math.min(.4 + noClicks * .1, .9)})`;
+
+    // Update YES button label to get funnier
+    const label = yesFunnyLabels[Math.min(noClicks, yesFunnyLabels.length - 1)];
+    yesBtn.textContent = label;
+
+    // Fade out NO button slowly
+    if (noClicks >= 4) {
+      btn.style.opacity = String(Math.max(0.08, 1 - noClicks * .18));
     }
   }
 
